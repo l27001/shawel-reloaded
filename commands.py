@@ -1,7 +1,9 @@
 import datetime, re, timeit, json
+import time
 
 from config import vk_info
 from methods import Methods
+from exceptions import *
 
 class Commands:
 
@@ -61,17 +63,21 @@ class Commands:
         text[0] = text[0].lower()
         text[0] = text[0].replace('/','')
         userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments'], 'inline':client_info['inline_keyboard']})
-        if(cmds.get(text[0]) == None):
+        try:
+            if(cmds.get(text[0]) == None):
+                raise CommandNotFound
+                return None
+            else:
+                cmds[text[0]](userinfo, text[1:])
+        except CommandNotFound as e:
+            if(DEBUG):
+                Methods.log("Message", e.__str__())
             if(chat_id < 2000000000):
                 Methods.send(chat_id, "👎🏻 Не понял.")
-            return None
-        else:
-            try:
-                cmds[text[0]](userinfo, text[1:])
-            except Exception as e:
-                Methods.log("ERROR", f"Непредвиденная ошибка. {str(e)}")
-                Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_457239188")
-                raise e
+        except Exception as e:
+            Methods.log("ERROR", f"Непредвиденная ошибка. {str(e)}")
+            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_457239188")
+            raise e
         if(DEBUG == True):
             Methods.log("Debug", f"Время выполнения: {str(timeit.default_timer()-extime)}")
  
@@ -154,7 +160,7 @@ class Commands:
                 continue
             prev = n
             if(n.__doc__ == None or n.__doc__ == ''):
-                doc = "Нет описания"
+                continue
             else:
                 doc = n.__doc__
             out.append(f'/{i} - {doc}')

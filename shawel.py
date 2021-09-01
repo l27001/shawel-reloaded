@@ -45,38 +45,46 @@ def start():
                     os.rmdir(os.path.join(root, name))
         finally:
             builtins.tmp_dir = tmp_dir
-        Methods.log("INFO",f"{scrname['name']} успешно запущен.")
+        Methods.log("INFO", f"{scrname['name']} успешно запущен.")
         while True:
             try:
                 for i in range(len(procs)-1, -1, -1):
                     code = procs[i].exitcode
                     if(code == None):
-                        pass
+                        continue
                     elif(code == 0):
-                        procs[i].join()
-                        del(procs[i])
+                        pass
                     else:
-                        procs[i].join()
-                        del(procs[i])
-                response = requests.get(server+"?act=a_check&key="+key+"&ts="+ts+"&wait=20",timeout=22).json()
-                if 'failed' in response:
-                    lp = api.groups.getLongPollServer(group_id=vk_info['groupid'])
-                    server = lp['server']
-                    key = lp['key']
-                    ts = lp['ts']
+                        Methods.log("WARN", f"Подпроцесс от TS {procs[i].name} вернул код {code}")
+                    procs[i].join()
+                    procs[i].close()
+                    del(procs[i])
+                response = requests.get(server+"?act=a_check&key="+key+"&ts="+ts+"&wait=60",timeout=61).json()
+                if('failed' in response):
+                    if(response['failed'] == 1):
+                        ts = response['ts']
+                    elif(response['failed'] == 2):
+                        lp = api.groups.getLongPollServer(group_id=vk_info['groupid'])
+                        server = lp['server']
+                        key = lp['key']
+                    else:
+                        lp = api.groups.getLongPollServer(group_id=vk_info['groupid'])
+                        server = lp['server']
+                        key = lp['key']
+                        ts = lp['ts']
                     if(DEBUG == True):
-                        Methods.log("Debug","Получен некорректный ответ. Ключ обновлен.")
+                        Methods.log("Debug", f"Получен некорректный ответ. Код: {response['failed']}.")
                     continue
                 if(response['ts'] != ts):
                     ts = response['ts']
                     with open(dir_path+"/TS", 'w') as f:
                         f.write(ts)
                     for res in response['updates']:
-                        t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,))
+                        t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,), daemon=True)
                         t.start()
                         procs.append(t)
-                if(datetime.now().minute == 30 or datetime.now().minute == 0):
-                    t = multiprocessing.Process(target=run_parse, name=f"parser")
+                if((datetime.now().minute == 30 or datetime.now().minute == 0) and args.disable_rasp_parser):
+                    t = multiprocessing.Process(target=run_parse, name="parser", daemon=True)
                     t.start()
                     procs.append(t)
             except(VeryError, ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
@@ -84,24 +92,37 @@ def start():
                 time.sleep(3)
     except KeyboardInterrupt:
         pass
-    except Exception as e:
-        print(e)
     finally:
-        Methods.log("INFO","Завершение...")
+        Methods.log("INFO", "Завершение...")
         for root, dirs, files in os.walk(tmp_dir, topdown=False):
             for name in files:
                 os.remove(os.path.join(root, name))
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
+        # count = 0
+        # while len(procs) != 0:
+        #     if(count > 10):
+        #         Methods.log("WARN", f"Не могу завершить подпроцесс(ы). {procs}")
+        #     for i in range(len(procs)-1, -1, -1):
+        #         code = procs[i].exitcode
+        #         if(code == None):
+        #             continue
+        #         elif(code == 0):
+        #             pass
+        #         else:
+        #             Methods.log("WARN", f"Подпроцесс от TS {procs[i].name} вернул код {code}")
+        #         procs[i].join()
+        #         del(procs[i])
+        #     count += 1
         os.rmdir(tmp_dir)
         Mysql.close()
         exit()
 
-Methods.log("INFO",f"Запуск бота...")
+Methods.log("INFO", "Запуск бота...")
 try:
     start()
 except(ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
-    Methods.log("ERROR","Запуск не удался. Повтор через 10 секунд.")
+    Methods.log("ERROR", "Запуск не удался. Повтор через 10 секунд.")
     time.sleep(10)
     start()
 
