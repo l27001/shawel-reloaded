@@ -11,7 +11,7 @@ class Commands:
         today = datetime.datetime.now()
         if(DEBUG == True):
             extime = timeit.default_timer()
-            print(today.strftime("%H:%M:%S %d.%m.%Y")+ ": "+str(response))
+            print(today.strftime("%H:%M:%S %d.%m.%Y") + ": " + str(response))
         obj = response['object']['message']
         client_info = response['object']['client_info']
         if 'reply_message' in obj:
@@ -26,9 +26,9 @@ class Commands:
         user = Methods.users_get(from_id)
         user = user[0]['last_name']+" "+user[0]['first_name']
         if(chat_id == from_id):
-            who = f"от {user}[{str(from_id)}]"
+            who = f"от {user}[{from_id}]"
         else:
-            who = f"в {str(chat_id)} от {user}[{str(from_id)}]"
+            who = f"в {chat_id} от {user}[{from_id}]"
         userinfo = Mysql.query("SELECT * FROM users WHERE vkid=%s", (from_id))
         if(userinfo == None):
             Mysql.query("INSERT INTO users (`vkid`) VALUES (%s)", (from_id))
@@ -75,11 +75,11 @@ class Commands:
             if(chat_id < 2000000000):
                 Methods.send(chat_id, "👎🏻 Не понял.")
         except Exception as e:
-            Methods.log("ERROR", f"Непредвиденная ошибка. {str(e)}")
+            Methods.log("ERROR", f"Непредвиденная ошибка. {e}")
             Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_457239188")
             raise e
         if(DEBUG == True):
-            Methods.log("Debug", f"Время выполнения: {str(timeit.default_timer()-extime)}")
+            Methods.log("Debug", f"Время выполнения: {timeit.default_timer()-extime}")
  
     def info(userinfo, text):
         """Выводит информацию о пользователе из БД. Если не указан пользователь, выведет информацию о текущем."""

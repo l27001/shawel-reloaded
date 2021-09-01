@@ -1,5 +1,3 @@
-from methods import Methods
-
 class CommandNotFound(Exception):
     """Вызывается, когда команда не может быть найдена"""
     def __init__(self, message="Команда не найдена"):
