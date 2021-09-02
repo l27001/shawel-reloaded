@@ -52,7 +52,8 @@ def parse():
                 if(r.status_code != 200): continue
                 for chunk in r.iter_content(chunk_size = 1024):
                     if(chunk): f.write(chunk)
-            subprocess.Popen(["pdftoppm",f"{tmp_dir}/parse/{prefix}.pdf",f"{curdir}/out","-png","-thinlinemode","shape"], stdout=subprocess.DEVNULL).wait()
+            # subprocess.Popen(["pdftoppm",f"{tmp_dir}/parse/{prefix}.pdf",f"{curdir}/out","-png","-thinlinemode","shape"], stdout=subprocess.DEVNULL).wait()
+            subprocess.Popen(["convert", "-colorspace", "RGB", "-density", "200", f"{tmp_dir}/parse/{prefix}.pdf", f"{curdir}/out.png"], stdout=subprocess.DEVNULL).wait()
             check(prefix)
             attach = []
             Mysql.query("DELETE FROM imgs WHERE mark=%s", (prefix))
