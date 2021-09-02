@@ -1,5 +1,4 @@
 import datetime, re, timeit, json
-import time
 
 from config import vk_info
 from methods import Methods
@@ -44,10 +43,10 @@ class Commands:
                     inline = Methods.check_keyboard(client_info['inline_keyboard'])
                     if(obj['payload']['action']['type'] == "intent_unsubscribe"):
                         Mysql.query(f"UPDATE users SET subscribe='0' WHERE vkid='{from_id}'")
-                        Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.\nДля повторной подписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline=inline))
+                        Methods.send(from_id, "Вы отписались от рассылки обновлений расписания.\nДля повторной подписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=from_id,intent="non_promo_newsletter",label="Подписаться"),inline=inline))
                     elif(obj['payload']['action']['type'] == "intent_subscribe"):
                         Mysql.query(f"UPDATE users SET subscribe='1' WHERE vkid='{from_id}'")
-                        Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.\nДля отписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline=inline))
+                        Methods.send(from_id, "Вы подписались на рассылку обновлений расписания.\nДля отписки используйте команду '/рассылка'", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type_="intent_unsubscribe",peer_id=from_id,intent="non_promo_newsletter",label="Отписаться"),inline=inline))
                     return None
             except TypeError: pass
             userinfo.update({'payload':obj['payload']})
@@ -122,7 +121,7 @@ class Commands:
             keyb = ''
         else:
             text = "https://shawel.ezdomain.ru\n\nВы можете подписаться на рассылку раписания с помощью кнопки ниже."
-            keyb = Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline']))
+            keyb = Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline']))
         if(rasp == ''):
             text = "Раписания нет."
         Methods.send(userinfo['chat_id'], text, rasp, keyboard=keyb)
@@ -140,9 +139,9 @@ class Commands:
         """Подписаться/Отписаться от рассылки актуального расписания"""
         if(userinfo['chat_id'] == userinfo['from_id']):
             if(userinfo['subscribe'] == 0):
-                Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
+                Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
             else:
-                Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
+                Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type_="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
         else:
             if(userinfo['chatinfo']['subscribe'] != 1):
                 Mysql.query("UPDATE `chats` SET subscribe=1 WHERE id=%s", (userinfo['chat_id']))

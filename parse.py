@@ -63,7 +63,7 @@ def parse_rasp(soup ,mode=0):
             rasp = Mysql.query("SELECT vkid,subscribe FROM users WHERE subscribe>='1'", fetch="all")
             i = 0
             for n in rasp:
-                Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
+                Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type_="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
                 i+=1
                 time.sleep(.5)
         else:
@@ -72,7 +72,6 @@ def parse_rasp(soup ,mode=0):
         for n in os.listdir(tmp_dir+"/parse/rasp"):
             os.remove(tmp_dir+"/parse/rasp/"+n)
         Methods.log("Parser", "Обнаружено новое расписание.")
-        time.sleep(60)
     else:
         Methods.log("Parser", "Новое расписание не было обнаружено.")
 
@@ -116,7 +115,7 @@ def parse_zvonki(soup, mode=0):
             rasp = Mysql.query("SELECT vkid,subscribe FROM users WHERE subscribe>='1'", fetch="all")
             i = 0
             for n in rasp:
-                Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
+                Methods.send(n['vkid'],message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b2=Methods.make_button(type_="intent_unsubscribe",peer_id=n['vkid'],intent="non_promo_newsletter",label="Отписаться"),inline="true"),intent="non_promo_newsletter")
                 i+=1
                 time.sleep(.5)
         else:
@@ -125,7 +124,6 @@ def parse_zvonki(soup, mode=0):
         for n in os.listdir(tmp_dir+"/parse/zvonki"):
             os.remove(tmp_dir+"/parse/zvonki/"+n)
         Methods.log("ZvonkiParser", "Обнаружено новое расписание звонков.")
-        time.sleep(60)
     else:
         Methods.log("ZvonkiParser", "Новое расписание звонков не было обнаружено.")
 

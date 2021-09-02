@@ -8,15 +8,15 @@ headers = {
 
 class Methods:
 
-    def make_button(color="primary",type="text",**kwargs):
+    def make_button(color="primary",type_="text",**kwargs):
         a = []
         for name,data in kwargs.items():
             a.append('"'+name+'":"'+str(data)+'"')
         kk = ",".join(a)
-        if(type != "intent_unsubscribe" and type != "intent_subscribe"):
-            return"{\"color\":\""+color+"\",\"action\":{\"type\":\""+type+"\","+kk+"}}"
+        if(type_ != "intent_unsubscribe" and type_ != "intent_subscribe"):
+            return"{\"color\":\""+color+"\",\"action\":{\"type\":\""+type_+"\","+kk+"}}"
         else:
-            return"{\"action\":{\"type\":\""+type+"\","+kk+"}}"
+            return"{\"action\":{\"type\":\""+type_+"\","+kk+"}}"
 
     def construct_keyboard(inline="false",one_time="false",**kwargs):
         a = []
@@ -83,8 +83,8 @@ class Methods:
     def send(peer_id,message='',attachment='',keyboard='{"buttons":[]}',disable_mentions=0,intent="default"):
         return api.messages.send(peer_id=peer_id,random_id=random.randint(1,2147400000),message=message,attachment=attachment,keyboard=keyboard,disable_mentions=disable_mentions,intent=intent)
 
-    def mass_send(peer_ids,message='',attachment='',keyboard='{"buttons":[]}',disable_mentions=0):
-        return api.messages.send(peer_ids=peer_ids,random_id=random.randint(1,2147400000),message=message,attachment=attachment,keyboard=keyboard,disable_mentions=disable_mentions)
+    def mass_send(peer_ids,message='',attachment='',keyboard='{"buttons":[]}',disable_mentions=0,intent="default"):
+        return api.messages.send(peer_ids=peer_ids,random_id=random.randint(1,2147400000),message=message,attachment=attachment,keyboard=keyboard,disable_mentions=disable_mentions,intent=intent)
 
     def upload_img(peer_id, file):
         if(Methods.is_message_allowed(peer_id) == 1):

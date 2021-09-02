@@ -14,7 +14,8 @@ builtins.dir_path = os.path.dirname(os.path.realpath(__file__))
 from config import tmp_dir, vk_info
 from commands import Commands
 from methods import Methods
-from parse import run_parse
+# from parse import run_parse
+from new_parse import run as run_parse
 
 builtins.Mysql = Methods.Mysql()
 session = vk.Session(access_token=vk_info['access_token'])
@@ -45,17 +46,15 @@ def start():
                     os.rmdir(os.path.join(root, name))
         finally:
             builtins.tmp_dir = tmp_dir
+        if(args.disable_rasp_parser == False):
+            multiprocessing.Process(target=run_parse, name="parser", daemon=True).start()
         Methods.log("INFO", f"{scrname['name']} успешно запущен.")
         while True:
             try:
+                print(procs)
                 for i in range(len(procs)-1, -1, -1):
-                    code = procs[i].exitcode
-                    if(code == None):
+                    if(procs[i].is_alive() == True):
                         continue
-                    elif(code == 0):
-                        pass
-                    else:
-                        Methods.log("WARN", f"Подпроцесс от TS {procs[i].name} вернул код {code}")
                     procs[i].join()
                     procs[i].close()
                     del(procs[i])
@@ -83,10 +82,6 @@ def start():
                         t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,), daemon=True)
                         t.start()
                         procs.append(t)
-                if((datetime.now().minute == 30 or datetime.now().minute == 0) and args.disable_rasp_parser):
-                    t = multiprocessing.Process(target=run_parse, name="parser", daemon=True)
-                    t.start()
-                    procs.append(t)
             except(VeryError, ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
                 Methods.log("WARN","Сервер не ответил. Жду 3 секунды перед повтором.")
                 time.sleep(3)
@@ -99,21 +94,6 @@ def start():
                 os.remove(os.path.join(root, name))
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
-        # count = 0
-        # while len(procs) != 0:
-        #     if(count > 10):
-        #         Methods.log("WARN", f"Не могу завершить подпроцесс(ы). {procs}")
-        #     for i in range(len(procs)-1, -1, -1):
-        #         code = procs[i].exitcode
-        #         if(code == None):
-        #             continue
-        #         elif(code == 0):
-        #             pass
-        #         else:
-        #             Methods.log("WARN", f"Подпроцесс от TS {procs[i].name} вернул код {code}")
-        #         procs[i].join()
-        #         del(procs[i])
-        #     count += 1
         os.rmdir(tmp_dir)
         Mysql.close()
         exit()
