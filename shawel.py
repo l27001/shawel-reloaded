@@ -51,7 +51,6 @@ def start():
         Methods.log("INFO", f"{scrname['name']} успешно запущен.")
         while True:
             try:
-                print(procs)
                 for i in range(len(procs)-1, -1, -1):
                     if(procs[i].is_alive() == True):
                         continue

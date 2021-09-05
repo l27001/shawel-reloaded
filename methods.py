@@ -27,16 +27,13 @@ class Methods:
         return re.sub(r"[']",'',kx)
 
     def log(prefix,message,timestamp=True):
-        if(os.path.isdir(dir_path+"/log/") == False):
-            os.mkdir(dir_path+"/log")
         now = datetime.datetime.now()
-        file = dir_path+"/log/"+now.strftime("%d.%m.%Y")+".log"
         if(timestamp == True):
             message = f"({now.strftime('%H:%M:%S')}) [{prefix}] {message}"
         else:
             message = f"[{prefix}] {message}"
         print(message)
-        with open(file, 'a', encoding='utf-8') as f:
+        with open(dir_path+"/shawel.log", 'a', encoding='utf-8') as f:
             f.write(message+"\n")
 
     def users_get(user_id,fields=''):
