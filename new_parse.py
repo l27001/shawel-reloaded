@@ -21,7 +21,7 @@ def check(dir_):
         im = Image.open(f'{tmp_dir}/parse/{dir_}/{name}')
         white = 0
         for n in im.getdata():
-            if(n == (255,255,255)):
+            if(n == (255,255,255,0)):
                 white += 1
         percent = white/(im.size[0]*im.size[1])
         if(percent >= 0.99):
