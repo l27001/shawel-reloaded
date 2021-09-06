@@ -36,13 +36,7 @@ def err405(e):
 @app.route('/zvonki', methods=['GET'])
 def zvonki():
     response = Mysql.query("SELECT id FROM imgs WHERE mark='zvonki' ORDER BY id", fetch="all")
-    if(len(response) > 0):
-        rasp = []
-        for n in response:
-            rasp.append(n['id'])
-    else:
-        rasp = None
-    return render_template('zvonki.html', title='Расписание звонков', rasp=rasp)
+    return render_template('zvonki.html', title='Расписание звонков', rasp=response)
 
 @app.route('/image/id_<int:id_>', methods=['GET'])
 def getimg(id_):
@@ -61,13 +55,7 @@ def getimg(id_):
 
 @app.route('/', methods=['GET'])
 def index():
-    response = Mysql.query("SELECT id FROM imgs WHERE mark='rasp' ORDER BY id", fetch="all")
-    if(len(response) > 0):
-        rasp = []
-        for n in response:
-            rasp.append(n['id'])
-    else:
-        rasp = None
+    rasp = Mysql.query("SELECT id FROM imgs WHERE mark='rasp' ORDER BY id", fetch="all")
     response = Mysql.query("SELECT `rasp-checked`,`rasp-updated` FROM vk")
     return render_template('index.html', title='Расписание', rasp=rasp, update=response)
 
