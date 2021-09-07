@@ -70,7 +70,7 @@ def parse():
                 for user in users:
                     send_users.append(str(user['vkid']))
                 send_users = ",".join(send_users)
-                Methods.mass_send(send_users,message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b1=Methods.make_button(label="Отписаться", color="primary"), one_time="true"), intent="non_promo_newsletter")
+                Methods.mass_send(send_users,message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b1=Methods.make_button(label="Отписаться", color="negative"), one_time="true"), intent="non_promo_newsletter")
                 i += i_limit
                 time.sleep(.3)
                 users = Mysql.query("SELECT vkid FROM `users` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
@@ -81,7 +81,7 @@ def parse():
                 for chat in chats:
                     send_chats.append(str(chat['id']))
                 send_chats = ",".join(send_chats)
-                Methods.mass_send(send_chats,message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b1=Methods.make_button(label="/отписаться", color="primary"), one_time="true"))
+                Methods.mass_send(send_chats,message=txt,attachment=attach)
                 i += i_limit
                 time.sleep(.3)
                 chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
