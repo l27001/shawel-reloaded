@@ -1,4 +1,4 @@
-import re, requests, datetime, os, random, timeit, pymysql, pymysql.cursors
+import re, requests, datetime, os, random, timeit, pymysql
 from pymysql.err import OperationalError, InterfaceError
 import config
 

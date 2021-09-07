@@ -34,8 +34,6 @@ class Commands:
             userinfo = Mysql.query("SELECT * FROM users WHERE vkid=%s", (from_id))
         tolog = text.replace("\n",r" \n ")
         Methods.log("Message", f"'{tolog}' {who}")
-        if(chat_id > 2000000000 and text[0] != '/'):
-            return None
         if('payload' in obj):
             try:
                 obj['payload'] = json.loads(obj['payload'])
@@ -59,6 +57,8 @@ class Commands:
                 Mysql.query(f"INSERT INTO chats (`id`) VALUES ({chat_id})")
                 chatinfo = Mysql.query(f"SELECT * FROM chats WHERE id = '{chat_id}' LIMIT 1")
             userinfo.update({'chatinfo':chatinfo})
+            if(text[0][0] != '/'):
+                return None
         text[0] = text[0].lower()
         text[0] = text[0].replace('/','')
         userinfo.update({'replid':replid,'chat_id':chat_id, 'from_id':from_id, 'attachments':obj['attachments'], 'inline':client_info['inline_keyboard']})

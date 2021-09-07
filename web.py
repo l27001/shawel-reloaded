@@ -46,12 +46,13 @@ def getimg(id_):
     img = Mysql.query("SELECT * FROM imgs WHERE id=%s", (id_))
     if(img == None):
         return err404(404)
+    now = datetime.now()
     return (img['image'],
         200, {'Content-Type': f"image/{img['type']}",
             'Content-Size': img['size'],
             'Cache-Control': 'max-age=14400',
-            'Last-Modified': datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-            'Expires': (datetime.now()+timedelta(seconds=14400)).strftime("%a, %d %b %Y %H:%M:%S GMT")})
+            'Last-Modified': now.strftime("%a, %d %b %Y %H:%M:%S GMT"),
+            'Expires': (now+timedelta(seconds=14400)).strftime("%a, %d %b %Y %H:%M:%S GMT")})
 
 @app.route('/', methods=['GET'])
 def index():
