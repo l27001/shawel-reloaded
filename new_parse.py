@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests as req
 import builtins, os, time, subprocess
 from datetime import datetime
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from methods import Methods
 from config import tmp_dir
 builtins.dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -18,10 +18,11 @@ for_parse = {
 
 def check(dir_):
     for name in sorted(os.listdir(f'{tmp_dir}/parse/{dir_}')):
-        im = Image.open(f'{tmp_dir}/parse/{dir_}/{name}')
+        try: im = Image.open(f'{tmp_dir}/parse/{dir_}/{name}')
+        except UnidentifiedImageError: continue
         white = 0
         for n in im.getdata():
-            if(n == (255,255,255,0)):
+            if((n[0] == 255 and n[1] == 255 and n[2] == 255) or n == (255, 0)):
                 white += 1
         percent = white/(im.size[0]*im.size[1])
         if(percent >= 0.99):
