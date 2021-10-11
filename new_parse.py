@@ -50,19 +50,19 @@ def parse():
             Mysql.query("UPDATE vk SET `rasp-updated`=%s", (date))
             with open(f"{tmp_dir}/parse/{prefix}.pdf", "wb") as f:
                 r = req.get(iframes[cnt]['src'], stream=True)
-                if(r.status_code != 200): continue
+                if(r.status_code != 200):
+                    Methods.log("WARN", f"Парсер не может загрузить файл {iframes[cnt]['src']}. Код: {r.status_code}")
+                    continue
                 for chunk in r.iter_content(chunk_size = 1024):
                     if(chunk): f.write(chunk)
             # subprocess.Popen(["pdftoppm",f"{tmp_dir}/parse/{prefix}.pdf",f"{curdir}/out","-png","-thinlinemode","shape"], stdout=subprocess.DEVNULL).wait()
             subprocess.Popen(["convert", "-colorspace", "RGB", "-density", "200", f"{tmp_dir}/parse/{prefix}.pdf", f"{curdir}/out.png"], stdout=subprocess.DEVNULL).wait()
             check(prefix)
             attach = []
-            Mysql.query("DELETE FROM imgs WHERE mark=%s", (prefix))
             for img in sorted(os.listdir(curdir)):
                 attach.append(Methods.upload_img('331465308', f"{curdir}/{img}"))
                 with open(f"{curdir}/{img}", "rb") as f:
                     blob = f.read()
-                Mysql.query("INSERT INTO imgs (`image`,`type`,`size`,`mark`) VALUES (%s, %s, %s, %s)", (blob, img.split('.')[-1], os.path.getsize(f'{curdir}/{img}'), prefix))
             txt = 'Зафиксировано обновление\nВремя '+date+'\nДля отписки используйте команду \'/рассылка\''
             i = 0; i_limit = 50
             users = Mysql.query("SELECT vkid FROM `users` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")

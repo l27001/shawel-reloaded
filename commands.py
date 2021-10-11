@@ -75,7 +75,7 @@ class Commands:
                 Methods.send(chat_id, "👎🏻 Не понял.")
         except Exception as e:
             Methods.log("ERROR", f"Непредвиденная ошибка. {e}")
-            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_457239188")
+            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_273680258")
             raise e
         if(DEBUG == True):
             Methods.log("Debug", f"Время выполнения: {timeit.default_timer()-extime}")
@@ -117,10 +117,10 @@ class Commands:
         """Присылает последнее расписание"""
         rasp = Mysql.query("SELECT rasp FROM vk")['rasp']
         if(userinfo['subscribe'] == 1 or userinfo['chat_id'] > 2000000000):
-            text = "https://shawel.ezdomain.ru\n\nПоследнее расписание:"
+            text = "Последнее расписание:"
             keyb = ''
         else:
-            text = "https://shawel.ezdomain.ru\n\nВы можете подписаться на рассылку раписания с помощью кнопки ниже."
+            text = "Вы можете подписаться на рассылку раписания с помощью кнопки ниже."
             keyb = Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline']))
         if(rasp == ''):
             text = "Раписания нет."
@@ -130,7 +130,7 @@ class Commands:
         """Отправляет расписание звонков"""
         data = Mysql.query("SELECT zvonki FROM vk")['zvonki']
         if(data != ''):
-            text = "Актуальное расписание звонков:\n\nhttps://shawel.ezdomain.ru/zvonki"
+            text = "Актуальное расписание звонков:"
         else:
             text = "Расписания звонков нет."
         Methods.send(userinfo['chat_id'],text,attachment=data)
