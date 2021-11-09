@@ -5,11 +5,11 @@ import builtins, os, time, subprocess
 from datetime import datetime
 from PIL import Image, UnidentifiedImageError
 from methods import Methods
-from config import tmp_dir
+from config import tmp_dir, vk_info
 builtins.dir_path = os.path.dirname(os.path.realpath(__file__))
 
 headers = {
-    'User-Agent': 'ShawelBot/Parser_v2.0'
+    'User-Agent': 'ShawelBot/Parser_v2.1'
 }
 for_parse = {
     'rasp': 0,
@@ -25,7 +25,7 @@ def check(dir_):
             if((n[0] == 255 and n[1] == 255 and n[2] == 255) or n == (255, 0)):
                 white += 1
         percent = white/(im.size[0]*im.size[1])
-        if(percent >= 0.99):
+        if(percent >= 0.995):
             os.remove(f'{tmp_dir}/parse/{dir_}/{name}')
 
 def parse():
@@ -37,7 +37,6 @@ def parse():
     now = datetime.now()
     date = now.strftime("%H:%M %d.%m.%Y")
     page = BeautifulSoup(page.text, 'html.parser')
-    Mysql.query("UPDATE vk SET `rasp-checked`=%s", (date))
     iframes = page.findAll("iframe")
     try:
         for prefix, cnt in for_parse.items():
@@ -47,7 +46,6 @@ def parse():
             res = Mysql.query(f"SELECT {prefix}_last FROM vk")[f'{prefix}_last']
             if(res == iframes[cnt]['src']):
                 continue
-            Mysql.query("UPDATE vk SET `rasp-updated`=%s", (date))
             with open(f"{tmp_dir}/parse/{prefix}.pdf", "wb") as f:
                 r = req.get(iframes[cnt]['src'], stream=True)
                 if(r.status_code != 200):
@@ -55,15 +53,19 @@ def parse():
                     continue
                 for chunk in r.iter_content(chunk_size = 1024):
                     if(chunk): f.write(chunk)
-            # subprocess.Popen(["pdftoppm",f"{tmp_dir}/parse/{prefix}.pdf",f"{curdir}/out","-png","-thinlinemode","shape"], stdout=subprocess.DEVNULL).wait()
             subprocess.Popen(["convert", "-colorspace", "RGB", "-density", "200", f"{tmp_dir}/parse/{prefix}.pdf", f"{curdir}/out.png"], stdout=subprocess.DEVNULL).wait()
+            files_count = len(os.listdir(f"{curdir}"))
             check(prefix)
             attach = []
             for img in sorted(os.listdir(curdir)):
-                attach.append(Methods.upload_img('331465308', f"{curdir}/{img}"))
-                with open(f"{curdir}/{img}", "rb") as f:
-                    blob = f.read()
-            txt = 'Зафиксировано обновление\nВремя '+date+'\nДля отписки используйте команду \'/рассылка\''
+                attach.append(Methods.upload_img_post(f"{curdir}/{img}"))
+            txt = 'Зафиксировано обновление\nДля отписки используйте команду \'/рассылка\''
+            post_pre = Mysql.query(f"SELECT {prefix}_post FROM vk")[f'{prefix}_post']
+            if(post_pre != '' and post_pre != None):
+                Methods.wall_del(post_pre)
+            post_id = Methods.wall_post(f"Файл: {iframes[cnt]['src'].split('/')[-1]}\nВремя: {date}\nИзображений: {len(attach)}/{files_count}",attachments=attach)['post_id']
+            Mysql.query(f"UPDATE vk SET {prefix}_post = %s", (post_id))
+            attach = f"wall-{vk_info['groupid']}_{post_id}"
             i = 0; i_limit = 50
             users = Mysql.query("SELECT vkid FROM `users` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
             while users:
@@ -71,7 +73,7 @@ def parse():
                 for user in users:
                     send_users.append(str(user['vkid']))
                 send_users = ",".join(send_users)
-                Methods.mass_send(send_users,message=txt,attachment=attach,keyboard=Methods.construct_keyboard(b1=Methods.make_button(label="Отписаться", color="negative"), one_time="true"), intent="non_promo_newsletter")
+                Methods.mass_send(send_users, message=txt, attachment=attach, keyboard=Methods.construct_keyboard(b1=Methods.make_button(label="Отписаться", color="negative"), one_time="true"), intent="non_promo_newsletter")
                 i += i_limit
                 time.sleep(.3)
                 users = Mysql.query("SELECT vkid FROM `users` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
@@ -82,11 +84,11 @@ def parse():
                 for chat in chats:
                     send_chats.append(str(chat['id']))
                 send_chats = ",".join(send_chats)
-                Methods.mass_send(send_chats,message=txt,attachment=attach)
+                Methods.mass_send(send_chats, message=txt, attachment=attach)
                 i += i_limit
                 time.sleep(.3)
                 chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
-            Mysql.query(f"UPDATE vk SET {prefix}=%s, {prefix}_last=%s", (','.join(attach), iframes[cnt]['src']))
+            Mysql.query(f"UPDATE vk SET {prefix}_last=%s", (iframes[cnt]['src']))
             Methods.log(f"{prefix.title()}Parser", "Зафиксировано обновление")
     finally:
         for root, dirs, files in os.walk(tmp_dir+"/parse", topdown=False):
@@ -98,9 +100,6 @@ def parse():
 
 def run():
     while True:
-        if(datetime.now().minute == 0 or datetime.now().minute == 30):
+        if(datetime.now().minute % 10 == 0):
             parse()
         time.sleep(60)
-
-if(__name__ == "__main__"):
-    parse()

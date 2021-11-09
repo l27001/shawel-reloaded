@@ -14,12 +14,16 @@ builtins.dir_path = os.path.dirname(os.path.realpath(__file__))
 from config import tmp_dir, vk_info
 from commands import Commands
 from methods import Methods
-# from parse import run_parse
-from new_parse import run as run_parse
+from parse import run as run_parse
+# from new_parse import run as run_parse
 
 builtins.Mysql = Methods.Mysql()
+### Group api
 session = vk.Session(access_token=vk_info['access_token'])
 builtins.api = vk.API(session, v='5.124', lang='ru')
+### User api (for wall posting)
+user_session = vk.Session(access_token=vk_info['user_token'])
+builtins.user_api = vk.API(user_session, v='5.124', lang='ru')
 
 ###
 def start():

@@ -115,40 +115,40 @@ class Commands:
 
     def raspisanie(userinfo, text):
         """Присылает последнее расписание"""
-        rasp = Mysql.query("SELECT rasp FROM vk")['rasp']
+        post = Mysql.query("SELECT rasp_post FROM vk")['rasp_post']
         if(userinfo['subscribe'] == 1 or userinfo['chat_id'] > 2000000000):
             text = "Последнее расписание:"
             keyb = ''
         else:
             text = "Вы можете подписаться на рассылку раписания с помощью кнопки ниже."
             keyb = Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline']))
-        if(rasp == ''):
+        if(post == ''):
             text = "Раписания нет."
-        Methods.send(userinfo['chat_id'], text, rasp, keyboard=keyb)
+        Methods.send(userinfo['chat_id'], text, f"wall-{vk_info['groupid']}_{post}", keyboard=keyb)
 
     def zvonki(userinfo, text):
         """Отправляет расписание звонков"""
-        data = Mysql.query("SELECT zvonki FROM vk")['zvonki']
-        if(data != ''):
+        post = Mysql.query("SELECT zvonki_post FROM vk")['zvonki_post']
+        if(post != ''):
             text = "Актуальное расписание звонков:"
         else:
             text = "Расписания звонков нет."
-        Methods.send(userinfo['chat_id'],text,attachment=data)
+        Methods.send(userinfo['chat_id'], text, f"wall-{vk_info['groupid']}_{post}")
 
     def subscribe(userinfo, text):
         """Подписаться/Отписаться от рассылки актуального расписания"""
         if(userinfo['chat_id'] == userinfo['from_id']):
             if(userinfo['subscribe'] == 0):
-                Methods.send(userinfo['chat_id'],"Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
+                Methods.send(userinfo['chat_id'], "Вы не подписаны", keyboard=Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
             else:
-                Methods.send(userinfo['chat_id'],"Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type_="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
+                Methods.send(userinfo['chat_id'], "Вы подписаны", keyboard=Methods.construct_keyboard(b2=Methods.make_button(type_="intent_unsubscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Отписаться"),inline=Methods.check_keyboard(userinfo['inline'])))
         else:
             if(userinfo['chatinfo']['subscribe'] != 1):
                 Mysql.query("UPDATE `chats` SET subscribe=1 WHERE id=%s", (userinfo['chat_id']))
-                Methods.send(userinfo['chat_id'],"Вы подписали беседу на рассылку обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
+                Methods.send(userinfo['chat_id'], "Вы подписали беседу на рассылку обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
             else:
                 Mysql.query("UPDATE `chats` SET subscribe=0 WHERE id=%s", (userinfo['chat_id']))
-                Methods.send(userinfo['chat_id'],"Вы отписали беседу от рассылки обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
+                Methods.send(userinfo['chat_id'], "Вы отписали беседу от рассылки обновлений расписания.\nДля рассылки лично вам напишите боту в ЛС.")
 
     def help(userinfo, text):
         """Помощь"""

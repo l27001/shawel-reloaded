@@ -3,5 +3,7 @@ db = {'host':'**HOST**',
         'user':'**USER**',
         'password':'**PASSWORD**',
         'database':'**DB**'}
-vk_info = {'access_token':'**TOKEN**', 'groupid':'**ID**'}
+vk_info = {'access_token':'**TOKEN**',
+        'groupid':'**ID**',
+        'user_token':'**TOKEN**'}
 tmp_dir = "/tmp/shawelbot" # NO SPACES! 

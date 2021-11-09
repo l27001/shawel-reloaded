@@ -96,6 +96,24 @@ class Methods:
         response = api.photos.saveMessagesPhoto(photo=no['photo'],server=no['server'],hash=no['hash'])
         return f"photo{response[0]['owner_id']}_{response[0]['id']}_{response[0]['access_key']}"
 
+    def upload_img_post(file):
+        srv = user_api.photos.getWallUploadServer()['upload_url']
+        response = requests.post(srv, files={
+                    'file': open(file, 'rb')
+                }).json()
+        response = user_api.photos.saveWallPhoto(photo=response['photo'],server=response['server'],hash=response['hash'])
+        return f"photo{response[0]['owner_id']}_{response[0]['id']}"
+
+    def wall_post(message='',attachments='',from_group=1,signed=0,close_comments=0):
+        return user_api.wall.post(owner_id="-"+config.vk_info['groupid'],message=message,attachments=attachments,from_group=from_group,signed=signed,close_comments=close_comments)
+
+    def wall_del(id_):
+        try:
+            return user_api.wall.delete(owner_id="-"+config.vk_info['groupid'],post_id=id_)
+        except Exception as e:
+            if(e.code): return e.code
+            else: raise Exception(e)
+
     def download_img(url, file):
         p = requests.get(url, headers=headers)
         with open(file, "wb") as out:
@@ -116,4 +134,4 @@ class Methods:
             return "true"
         else:
             return "false"
- 
+
