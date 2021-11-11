@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 from bs4 import BeautifulSoup
 import requests as req
-import builtins, os, time, subprocess
+from time import sleep
+import os, subprocess
 from datetime import datetime
 from PIL import Image, UnidentifiedImageError
 from methods import Methods
 from config import tmp_dir, vk_info
-builtins.dir_path = os.path.dirname(os.path.realpath(__file__))
 
 headers = {
     'User-Agent': 'ShawelBot/Parser_v2.1'
@@ -49,12 +49,12 @@ def parse():
             with open(f"{tmp_dir}/parse/{prefix}.pdf", "wb") as f:
                 r = req.get(iframes[cnt]['src'], stream=True)
                 if(r.status_code != 200):
-                    Methods.log("WARN", f"Парсер не может загрузить файл {iframes[cnt]['src']}. Код: {r.status_code}")
+                    Methods.log("WARN", f"Парсер [{prefix}] не может загрузить файл {iframes[cnt]['src']}. Код: {r.status_code}")
                     continue
                 for chunk in r.iter_content(chunk_size = 1024):
                     if(chunk): f.write(chunk)
             subprocess.Popen(["convert", "-colorspace", "RGB", "-density", "200", f"{tmp_dir}/parse/{prefix}.pdf", f"{curdir}/out.png"], stdout=subprocess.DEVNULL).wait()
-            files_count = len(os.listdir(f"{curdir}"))
+            files_count = len(os.listdir(curdir))
             check(prefix)
             attach = []
             for img in sorted(os.listdir(curdir)):
@@ -64,6 +64,8 @@ def parse():
             if(post_pre != '' and post_pre != None):
                 Methods.wall_del(post_pre)
             post_id = Methods.wall_post(f"Файл: {iframes[cnt]['src'].split('/')[-1]}\nВремя: {date}\nИзображений: {len(attach)}/{files_count}",attachments=attach)['post_id']
+            if(for_parse[prefix] == 2):
+                Methods.wall_pin(post_id)
             Mysql.query(f"UPDATE vk SET {prefix}_post = %s", (post_id))
             attach = f"wall-{vk_info['groupid']}_{post_id}"
             i = 0; i_limit = 50
@@ -75,7 +77,7 @@ def parse():
                 send_users = ",".join(send_users)
                 Methods.mass_send(send_users, message=txt, attachment=attach, keyboard=Methods.construct_keyboard(b1=Methods.make_button(label="Отписаться", color="negative"), one_time="true"), intent="non_promo_newsletter")
                 i += i_limit
-                time.sleep(.3)
+                sleep(.3)
                 users = Mysql.query("SELECT vkid FROM `users` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
             i = 0
             chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
@@ -86,7 +88,7 @@ def parse():
                 send_chats = ",".join(send_chats)
                 Methods.mass_send(send_chats, message=txt, attachment=attach)
                 i += i_limit
-                time.sleep(.3)
+                sleep(.3)
                 chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
             Mysql.query(f"UPDATE vk SET {prefix}_last=%s", (iframes[cnt]['src']))
             Methods.log(f"{prefix.title()}Parser", "Зафиксировано обновление")
@@ -102,4 +104,4 @@ def run():
     while True:
         if(datetime.now().minute % 10 == 0):
             parse()
-        time.sleep(60)
+        sleep(60)

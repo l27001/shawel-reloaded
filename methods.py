@@ -114,6 +114,9 @@ class Methods:
             if(e.code): return e.code
             else: raise Exception(e)
 
+    def wall_pin(id_):
+        return user_api.wall.pin(owner_id="-"+config.vk_info['groupid'],post_id=id_)
+
     def download_img(url, file):
         p = requests.get(url, headers=headers)
         with open(file, "wb") as out:

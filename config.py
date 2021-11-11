@@ -6,4 +6,4 @@ db = {'host':'**HOST**',
 vk_info = {'access_token':'**TOKEN**',
         'groupid':'**ID**',
         'user_token':'**TOKEN**'}
-tmp_dir = "/tmp/shawelbot" # NO SPACES! 
+tmp_dir = "/tmp/shawelbot"
