@@ -75,7 +75,7 @@ class Commands:
                 Methods.send(chat_id, "👎🏻 Не понял.")
         except Exception as e:
             Methods.log("ERROR", f"Непредвиденная ошибка. {e}")
-            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_273680258")
+            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_457239206")
             raise e
         if(DEBUG == True):
             Methods.log("Debug", f"Время выполнения: {timeit.default_timer()-extime}")
@@ -115,25 +115,30 @@ class Commands:
 
     def raspisanie(userinfo, text):
         """Присылает последнее расписание"""
-        post = Mysql.query("SELECT rasp_post FROM vk")['rasp_post']
-        if(userinfo['subscribe'] == 1 or userinfo['chat_id'] > 2000000000):
+        post = Methods.setting_get('rasp_post')
+        keyb = ''
+        attachment = ''
+        if(post is None):
+            text = "Раписания нет."
+        elif(userinfo['subscribe'] == 1 or userinfo['chat_id'] > 2000000000):
             text = "Последнее расписание:"
-            keyb = ''
+            attachment = f"wall-{vk_info['groupid']}_{post}"
         else:
             text = "Вы можете подписаться на рассылку раписания с помощью кнопки ниже."
             keyb = Methods.construct_keyboard(b1=Methods.make_button(type_="intent_subscribe",peer_id=userinfo['from_id'],intent="non_promo_newsletter",label="Подписаться"),inline=Methods.check_keyboard(userinfo['inline']))
-        if(post == ''):
-            text = "Раписания нет."
-        Methods.send(userinfo['chat_id'], text, f"wall-{vk_info['groupid']}_{post}", keyboard=keyb)
+            attachment = f"wall-{vk_info['groupid']}_{post}"
+        Methods.send(userinfo['chat_id'], text, attachment, keyboard=keyb)
 
     def zvonki(userinfo, text):
         """Отправляет расписание звонков"""
-        post = Mysql.query("SELECT zvonki_post FROM vk")['zvonki_post']
-        if(post != ''):
+        post = Methods.setting_get('zvonki_post')
+        if(post is not None):
             text = "Актуальное расписание звонков:"
+            attachment = f"wall-{vk_info['groupid']}_{post}"
         else:
             text = "Расписания звонков нет."
-        Methods.send(userinfo['chat_id'], text, f"wall-{vk_info['groupid']}_{post}")
+            attachment = ''
+        Methods.send(userinfo['chat_id'], text, attachment)
 
     def subscribe(userinfo, text):
         """Подписаться/Отписаться от рассылки актуального расписания"""

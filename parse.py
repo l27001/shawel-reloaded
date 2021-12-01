@@ -13,7 +13,7 @@ headers = {
 }
 for_parse = {
     'rasp': 0,
-    'zvonki': 2
+    #'zvonki': 2
 }
 
 def check(dir_):
@@ -43,7 +43,7 @@ def parse():
             curdir = tmp_dir+"/parse/"+prefix
             if(os.path.isdir(curdir) == False):
                 os.makedirs(curdir)
-            res = Mysql.query(f"SELECT {prefix}_last FROM vk")[f'{prefix}_last']
+            res = Methods.setting_get(f'{prefix}_last')
             if(res == iframes[cnt]['src']):
                 continue
             with open(f"{tmp_dir}/parse/{prefix}.pdf", "wb") as f:
@@ -60,13 +60,13 @@ def parse():
             for img in sorted(os.listdir(curdir)):
                 attach.append(Methods.upload_img_post(f"{curdir}/{img}"))
             txt = 'Зафиксировано обновление\nДля отписки используйте команду \'/рассылка\''
-            post_pre = Mysql.query(f"SELECT {prefix}_post FROM vk")[f'{prefix}_post']
-            if(post_pre != '' and post_pre != None):
-                Methods.wall_del(post_pre)
+            # post_pre = Methods.setting_get('post_pre')
+            # if(post_pre != '' and post_pre != None):
+                # Methods.wall_del(post_pre)
             post_id = Methods.wall_post(f"Файл: {iframes[cnt]['src'].split('/')[-1]}\nВремя: {date}\nИзображений: {len(attach)}/{files_count}",attachments=attach)['post_id']
             if(for_parse[prefix] == 2):
                 Methods.wall_pin(post_id)
-            Mysql.query(f"UPDATE vk SET {prefix}_post = %s", (post_id))
+            Methods.setting_set(f'{prefix}_post', post_id)
             attach = f"wall-{vk_info['groupid']}_{post_id}"
             i = 0; i_limit = 50
             users = Mysql.query("SELECT vkid FROM `users` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
@@ -90,7 +90,7 @@ def parse():
                 i += i_limit
                 sleep(.3)
                 chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
-            Mysql.query(f"UPDATE vk SET {prefix}_last=%s", (iframes[cnt]['src']))
+            Methods.setting_set(f'{prefix}_last', iframes[cnt]['src'])
             Methods.log(f"{prefix.title()}Parser", "Зафиксировано обновление")
     finally:
         for root, dirs, files in os.walk(tmp_dir+"/parse", topdown=False):
@@ -103,5 +103,8 @@ def parse():
 def run():
     while True:
         if(datetime.now().minute % 10 == 0):
-            parse()
+            try:
+                parse()
+            except Exception as e:
+                Methods.log("ERROR", e)
         sleep(60)

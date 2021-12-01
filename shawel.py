@@ -15,7 +15,6 @@ from config import tmp_dir, vk_info
 from commands import Commands
 from methods import Methods
 from parse import run as run_parse
-# from new_parse import run as run_parse
 
 builtins.Mysql = Methods.Mysql()
 ### Group api

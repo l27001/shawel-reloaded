@@ -138,3 +138,19 @@ class Methods:
         else:
             return "false"
 
+    def setting_set(setting, value='NULL'):
+        setting = str(setting).replace(' ', '_')
+        return Mysql.query("INSERT INTO settings (name, value) VALUES(%s, %s) ON DUPLICATE KEY UPDATE value=%s", (setting, value, value))
+
+    def setting_get(setting):
+        setting = str(setting).replace(' ', '_')
+        res = Mysql.query("SELECT value FROM settings WHERE name = %s", (setting))
+        if(res['value'] == "True"): return True
+        elif(res['value'] == "False"): return False
+        elif(res is not None and res['value'] != 'NULL'): return res['value']
+        else: return None
+
+    def setting_delete(setting):
+        setting = str(setting).replace(' ', '_')
+        Mysql.query("DELETE FROM settings WHERE name = %s", (setting))
+
