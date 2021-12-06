@@ -28,16 +28,23 @@ def check(dir_):
         if(percent >= 0.995):
             os.remove(f'{tmp_dir}/parse/{dir_}/{name}')
 
-def parse():
+def parse(for_parse, manual = False):
+    if(os.path.isdir(tmp_dir + '/parse') != True):
+        os.makedirs(tmp_dir + '/parse')
+    if(os.path.isfile(tmp_dir + '/parse/parser.tmp')):
+        return 10
     Mysql = Methods.Mysql()
     Methods.log("Parser", "Парсер выполняет проверку...")
     page = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
     if(page.status_code != 200):
         Methods.log("Parser", f"Получен неожиданный http код {self.page.status_code}")
+        return self.page.status_code
     now = datetime.now()
     date = now.strftime("%H:%M %d.%m.%Y")
     page = BeautifulSoup(page.text, 'html.parser')
     iframes = page.findAll("iframe")
+    with open(tmp_dir + '/parse/parser.tmp', 'w') as f:
+        f.write('')
     try:
         for prefix, cnt in for_parse.items():
             curdir = tmp_dir+"/parse/"+prefix
@@ -45,6 +52,8 @@ def parse():
                 os.makedirs(curdir)
             res = Methods.setting_get(f'{prefix}_last')
             if(res == iframes[cnt]['src']):
+                if(manual):
+                    return 11
                 continue
             with open(f"{tmp_dir}/parse/{prefix}.pdf", "wb") as f:
                 r = req.get(iframes[cnt]['src'], stream=True)
@@ -104,7 +113,7 @@ def run():
     while True:
         if(datetime.now().minute % 10 == 0):
             try:
-                parse()
+                parse(for_parse)
             except Exception as e:
                 Methods.log("ERROR", e)
         sleep(60)

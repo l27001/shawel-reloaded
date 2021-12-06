@@ -22,6 +22,7 @@ class Methods:
         a = []
         for n in kwargs:
             a.append("["+kwargs[n]+"]")
+        if(inline == "false"): one_time = "true"
         kx = f'"buttons":{a},"inline":{inline},"one_time":{one_time}'
         kx = '{'+kx+'}'
         return re.sub(r"[']",'',kx)
@@ -130,13 +131,7 @@ class Methods:
         return api.utils.resolveScreenName(screen_name=name)
 
     def del_message(message_ids,delete_for_all=1,group_id=config.vk_info['groupid']):
-        return api.messages.delete(message_ids=message_ids,delete_for_all=1,group_id=config.vk_info['groupid'])
-
-    def check_keyboard(inline):
-        if(inline):
-            return "true"
-        else:
-            return "false"
+        return api.messages.delete(message_ids=message_ids,delete_for_all=delete_for_all,group_id=group_id)
 
     def setting_set(setting, value='NULL'):
         setting = str(setting).replace(' ', '_')
