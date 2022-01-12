@@ -30,7 +30,7 @@ class Commands:
         if('action' in obj):
             if(obj['action']['type'] == 'chat_invite_user' and str(obj['action']['member_id']) == '-' + vk_info['groupid']):
                 keyb = Methods.construct_keyboard(b0=Methods.make_button(label="/помощь", color="primary"), b1=Methods.make_button(label="/рассылка", color="positive"), b2=Methods.make_button(label="/расписание", color="secondary"), b3=Methods.make_button(label="/звонки", color="secondary"), inline="true")
-                Methods.send(chat_id, "Привет! Я бот Щавель, я слежу за расписанием и могу присылать расписание как по вашему запросу, так и при его обновлении на сайте.\nСписок команд можно получить введя команду /помощь", keyboard=keyb)
+                Methods.send(chat_id, "Привет! Я бот Щавель, я слежу за расписанием и могу присылать расписание как по вашему запросу, так и при его обновлении на сайте.\nСписок команд можно получить введя команду /помощь\nЧтобы подписаться на рассылку расписания используйте команду /рассылка", keyboard=keyb)
         if(from_id < 1 or text == ''):
             return None
         user = Methods.users_get(from_id)

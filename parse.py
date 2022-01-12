@@ -7,6 +7,7 @@ from datetime import datetime
 from PIL import Image, UnidentifiedImageError
 from methods import Methods
 from config import tmp_dir, vk_info
+import tg_methods as Methods_tg
 
 headers = {
     'User-Agent': 'ShawelBot/Parser_v2.1'
@@ -100,6 +101,7 @@ def parse(for_parse, manual = False):
                 sleep(.3)
                 chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
             Methods.setting_set(f'{prefix}_last', iframes[cnt]['src'])
+            Methods_tg.send_to_users(prefix, curdir, txt)
             Methods.log(f"{prefix.title()}Parser", "Зафиксировано обновление")
     finally:
         for root, dirs, files in os.walk(tmp_dir+"/parse", topdown=False):
