@@ -73,7 +73,8 @@ def parse(for_parse, manual = False):
             # post_pre = Methods.setting_get('post_pre')
             # if(post_pre != '' and post_pre != None):
                 # Methods.wall_del(post_pre)
-            post_id = Methods.wall_post(f"Файл: {iframes[cnt]['src'].split('/')[-1]}\nВремя: {date}\nИзображений: {len(attach)}/{files_count}",attachments=attach)['post_id']
+            txt1 = f"Файл: {iframes[cnt]['src'].split('/')[-1]}\nВремя: {date}\nИзображений: {len(attach)}/{files_count}"
+            post_id = Methods.wall_post(txt1,attachments=attach)['post_id']
             if(for_parse[prefix] == 2):
                 Methods.wall_pin(post_id)
             Methods.setting_set(f'{prefix}_post', post_id)
@@ -101,7 +102,7 @@ def parse(for_parse, manual = False):
                 sleep(.3)
                 chats = Mysql.query("SELECT id FROM `chats` WHERE subscribe = 1 LIMIT %s, %s", (i, i_limit), fetch="all")
             Methods.setting_set(f'{prefix}_last', iframes[cnt]['src'])
-            Methods_tg.send_to_users(prefix, curdir, txt)
+            Methods_tg.send_to_users(prefix, curdir, txt1)
             Methods.log(f"{prefix.title()}Parser", "Зафиксировано обновление")
     finally:
         for root, dirs, files in os.walk(tmp_dir+"/parse", topdown=False):
