@@ -45,6 +45,37 @@ CREATE TABLE `settings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `tg_chats`
+--
+
+DROP TABLE IF EXISTS `tg_chats`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tg_chats` (
+  `id` bigint(20) NOT NULL,
+  `subscribe` int(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `subscribe` (`subscribe`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tg_users`
+--
+
+DROP TABLE IF EXISTS `tg_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tg_users` (
+  `tgid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `dostup` int(11) NOT NULL DEFAULT 0,
+  `subscribe` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`tgid`),
+  KEY `subscribe` (`subscribe`)
+) ENGINE=InnoDB AUTO_INCREMENT=5021037692 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `users`
 --
 
@@ -69,4 +100,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-12-01 19:13:07
+-- Dump completed on 2022-01-16 16:11:16

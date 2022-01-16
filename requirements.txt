@@ -4,3 +4,4 @@ Pillow>=8.1.0
 PyMySQL>=1.0.2
 vk==2.0.2
 pyOpenSSL
+pyTelegramBotAPI>=4.2.2

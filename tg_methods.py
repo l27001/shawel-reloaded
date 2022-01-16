@@ -7,8 +7,6 @@ builtins.dir_path = os.path.dirname(os.path.realpath(__file__))
 telebot.apihelper.ENABLE_MIDDLEWARE = True
 builtins.bot = telebot.TeleBot(config.tg_info['access_token'])
 
-import os
-
 def get_user(id_):
     user = Mysql.query("SELECT * FROM tg_users WHERE tgid = %s", id_)
     if(user is not None):
