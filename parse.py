@@ -35,7 +35,7 @@ def parse(for_parse, manual = False):
     if(os.path.isfile(tmp_dir + '/parse/parser.tmp')):
         return 10
     Mysql = Methods.Mysql()
-    Methods.log("Parser", "Парсер выполняет проверку...")
+    # Methods.log("Parser", "Парсер выполняет проверку...")
     page = req.get("https://engschool9.ru/content/raspisanie.html", headers=headers)
     if(page.status_code != 200):
         Methods.log("Parser", f"Получен неожиданный http код {self.page.status_code}")
