@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19  Distrib 10.6.4-MariaDB, for Linux (aarch64)
 --
--- Host: **HOST**    Database: shawel_new
+-- Host: localhost    Database: shawel_new
 -- ------------------------------------------------------
 -- Server version	10.6.4-MariaDB-log
 

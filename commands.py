@@ -90,7 +90,7 @@ class Commands:
                 Methods.send(chat_id, "👎🏻 Не понял.", keyboard=keyb)
         except Exception as e:
             Methods.log("ERROR", f"Непредвиденная ошибка. {e}")
-            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-**ID**_457239206")
+            Methods.send(chat_id, "⚠ Произошла непредвиденная ошибка.\nОбратитесь к @l27001", attachment="photo-183256712_457239206")
             raise e
         if(DEBUG == True):
             Methods.log("Debug", f"Время выполнения: {timeit.default_timer()-extime}")
