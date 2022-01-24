@@ -2,6 +2,6 @@ bs4>=0.0.1
 requests>=2.26.0
 Pillow>=8.1.0
 PyMySQL>=1.0.2
-vk==2.0.2
+vk
 pyOpenSSL
 pyTelegramBotAPI>=4.2.2
