@@ -66,7 +66,7 @@ def rasp(message):
     to_send = []
     for n in data:
         to_send.append(telebot.types.InputMediaPhoto(n))
-    bot.send_media_group(message.chat.id, to_send, False, message.id, None, True)
+    bot.send_media_group(message.chat.id, to_send, False, message.id)
 
 @bot.message_handler(commands=['звонки', 'zvonki'])
 def zvonki(message):
@@ -74,7 +74,7 @@ def zvonki(message):
     to_send = []
     for n in data:
         to_send.append(telebot.types.InputMediaPhoto(n))
-    bot.send_media_group(message.chat.id, to_send, False, message.id, None, True)
+    bot.send_media_group(message.chat.id, to_send, False, message.id)
 
 @bot.message_handler(func=lambda message: True, chat_types=['private'])
 def no_command(message):
