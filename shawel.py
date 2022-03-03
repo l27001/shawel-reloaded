@@ -27,7 +27,7 @@ builtins.user_api = vk.API(user_session, v='5.124', lang='ru')
 ###
 def start():
     try:
-        procs = []
+        # procs = []
         scrname = api.groups.getById(group_id=vk_info['groupid'])[0]
         builtins.scrname = scrname['screen_name']
         lp = api.groups.getLongPollServer(group_id=vk_info['groupid'])
@@ -54,12 +54,12 @@ def start():
         Methods.log("INFO", f"{scrname['name']} успешно запущен.")
         while True:
             try:
-                for i in range(len(procs)-1, -1, -1):
-                    if(procs[i].is_alive() == True):
-                        continue
-                    procs[i].join()
-                    procs[i].close()
-                    del(procs[i])
+                # for i in range(len(procs)-1, -1, -1):
+                #     if(procs[i].is_alive() == True):
+                #         continue
+                #     procs[i].join()
+                #     procs[i].close()
+                #     del(procs[i])
                 response = requests.get(server+"?act=a_check&key="+key+"&ts="+ts+"&wait=60",timeout=61).json()
                 if('failed' in response):
                     if(response['failed'] == 1):
@@ -81,9 +81,10 @@ def start():
                     with open(dir_path+"/TS", 'w') as f:
                         f.write(ts)
                     for res in response['updates']:
-                        t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,), daemon=True)
-                        t.start()
-                        procs.append(t)
+                        # t = multiprocessing.Process(target=Commands, name=f"{ts}", args=(res,), daemon=True)
+                        # t.start()
+                        # procs.append(t)
+                        Commands(res)
             except(VeryError, ConnectTimeout, HTTPError, ReadTimeout, Timeout, ConnectionError):
                 Methods.log("WARN","Сервер не ответил. Жду 3 секунды перед повтором.")
                 time.sleep(3)

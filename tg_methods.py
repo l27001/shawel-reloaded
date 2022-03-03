@@ -71,7 +71,7 @@ def send_to_users(prefix, dir, txt):
             bot.send_media_group(user['tgid'], to_send, True)
             bot.send_message(user['tgid'], txt, "HTML", disable_notification=False)
         except Exception as e:
-            log("TG_ERR", str(e)+" | User: "+user['tgid'])
+            log("TG_ERR", str(e)+" | User: "+str(user['tgid']))
     chats = Mysql.query("SELECT id FROM tg_chats WHERE subscribe = 1", fetch="all")
     for chat in chats:
         to_send = []
@@ -81,5 +81,5 @@ def send_to_users(prefix, dir, txt):
             bot.send_media_group(chat['id'], to_send, True)
             bot.send_message(chat['id'], txt, "HTML", disable_notification=False)
         except Exception as e:
-            log("TG_ERR", str(e)+" | Chat: "+chat['id'])
+            log("TG_ERR", str(e)+" | Chat: "+str(chat['id']))
     for f in files: f.close()
